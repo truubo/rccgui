@@ -145,11 +145,8 @@ def closeJob():
 
 root = Tk()
 root.title("rccGUI 1.0")
-root.geometry('525x345')
-root.maxsize(525, 345)
-
-title = Label(root, text="rccGUI 1.0")
-title.grid(row=0, column=0, padx=5, pady=5, sticky=W)
+root.geometry('485x310')
+root.maxsize(485, 310)
 
 ip_label = Label(root, text="IP")
 ip_label.grid(row=1, column=0, sticky=E, padx=5)
