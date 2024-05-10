@@ -1,7 +1,6 @@
 from tkinter import *
 import tkinter.ttk as ttk
-from tkinter import messagebox
-#from tkinter.ttk import *
+from tkinter import messagebox, filedialog
 import xml.etree.ElementTree as ET
 import requests, time, random
 
@@ -50,6 +49,9 @@ def selectJob():
   messagebox.showinfo("Test", joblist.item(joblist.focus()))
 
 def createJob(jobID, expiration, *args, **kwargs):
+  if jobID == "":
+    messagebox.showerror("Error", "You must enter a job ID")
+    return
   success, content, ping = sendSoap(ip.get(), port.get(), "OpenJobEx", f"""<ns0:OpenJobEx xmlns:ns0="http://roblox.com/"><ns0:job><ns0:id>{jobID}</ns0:id><ns0:expirationInSeconds>{expiration}</ns0:expirationInSeconds><ns0:category>0</ns0:category><ns0:cores>1</ns0:cores></ns0:job><ns0:script><ns0:name>test</ns0:name><ns0:script>print('Hello world')</ns0:script></ns0:script></ns0:OpenJobEx>""")
   if success:
     getAllJobs()
@@ -112,8 +114,15 @@ def executeScript(jobID, script, *args, **kwargs):
         output.config(state=DISABLED)
       else:
         messagebox.showerror("Error", root.find(".//{http://schemas.xmlsoap.org/soap/envelope/}Fault/{http://schemas.xmlsoap.org/soap/envelope/}faultstring"))
-      
 
+def executeFile(jobID, *args, **kwargs):
+  filename = filedialog.askopenfilename(filetypes=(("Lua script", "*.lua"), ("Text file", "*.txt"), ("All files", "*.*")))
+  if filename != "":
+    try:
+      file = open(filename, 'r').read()
+      executeScript(jobID, file, textbox=kwargs.get("textbox"))
+    except Exception as e:
+      messagebox.showerror("Error", f"Error opening file. Error: {e}")
 
 def showExecuteWindow():
   if joblist.item(joblist.focus()).get("values") == "":
@@ -122,7 +131,7 @@ def showExecuteWindow():
   jobID = joblist.item(joblist.focus()).get("values")[0]
   executeWindow = Toplevel()
   executeWindow.title(f"Executing script in {jobID}")
-  scriptBox = Text(executeWindow, height=20, width=80)
+  scriptBox = Text(executeWindow, height=20, width=80, undo=True, autoseparators=True, maxundo=-1)
   scriptBox.grid(row=0, column=0, padx=5, pady=5, columnspan=80)
   output = Text(executeWindow, height=20, width=80)
   output.config(state=DISABLED)
@@ -131,6 +140,8 @@ def showExecuteWindow():
   executeButton.grid(row=1, column=0, padx=5, pady=5, sticky=W)
   clearButton = Button(executeWindow, width=10, text="Clear", command=lambda: scriptBox.delete(1.0, END))
   clearButton.grid(row=1, column=1, padx=5, pady=5, sticky=W)
+  executeFileButton = Button(executeWindow, width=10, text="Execute file", command=lambda: executeFile(jobID, textbox=output))
+  executeFileButton.grid(row=1, column=2, padx=5, pady=5, sticky=W)
 
 def closeJob():
   if joblist.item(joblist.focus()).get("values") == "":
