@@ -2,7 +2,7 @@ from tkinter import *
 import tkinter.ttk as ttk
 from tkinter import messagebox, filedialog
 import xml.etree.ElementTree as ET
-import requests, time, random
+import requests, time, random, base64
 
 def sendSoap(ip, port, action, xml, *args, **kwargs):
   try:
@@ -130,10 +130,17 @@ def executeFile(jobID, *args, **kwargs):
       messagebox.showerror("Error", f"Error opening file. Error: {e}")
 
 def saveOutput():
-  types = [("Text file", "*.txt"), ("All files", "*.*")]
+  types = [("Text file", "*.txt"), ("JPG image", "*.jpg"), ("PNG image", "*.png"), ("All files", "*.*")]
   file = filedialog.asksaveasfile(filetypes=types, defaultextension=types)
-  file.write(consoleOutput or None)
-  file.close()
+  filename = file.name
+  if filename.split(".")[-1] in ["jpg", "png"]:
+    file.close()
+    bytes_file = open(filename, "wb")
+    bytes_file.write(base64.b64decode(consoleOutput))
+    bytes_file.close()
+  else:
+    file.write(consoleOutput or None)
+    file.close()
   messagebox.showinfo("Success", "Console output saved successfully")
 
 def showExecuteWindow():
