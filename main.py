@@ -52,7 +52,7 @@ def createJob(jobID, expiration, *args, **kwargs):
   if jobID == "":
     messagebox.showerror("Error", "You must enter a job ID")
     return
-  success, content, ping = sendSoap(ip.get(), port.get(), "OpenJobEx", f"""<ns0:OpenJobEx xmlns:ns0="http://roblox.com/"><ns0:job><ns0:id>{jobID}</ns0:id><ns0:expirationInSeconds>{expiration}</ns0:expirationInSeconds><ns0:category>0</ns0:category><ns0:cores>1</ns0:cores></ns0:job><ns0:script><ns0:name>test</ns0:name><ns0:script>print('Hello world')</ns0:script></ns0:script></ns0:OpenJobEx>""")
+  success, content, ping = sendSoap(ip.get(), port.get(), "OpenJob", f"""<ns0:OpenJob xmlns:ns0="http://roblox.com/"><ns0:job><ns0:id>{jobID}</ns0:id><ns0:expirationInSeconds>{expiration}</ns0:expirationInSeconds><ns0:category>0</ns0:category><ns0:cores>1</ns0:cores></ns0:job><ns0:script><ns0:name>test</ns0:name><ns0:script>print('Hello world')</ns0:script></ns0:script></ns0:OpenJob>""")
   if success:
     getAllJobs()
     messagebox.showinfo("Job created", "Created job successfully!")
