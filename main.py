@@ -99,7 +99,12 @@ def executeScript(jobID, script, *args, **kwargs):
       executeResult = root.find(".//{http://roblox.com/}ExecuteResult")
       if executeResult != None:
         returned = executeResult.find("{http://roblox.com/}value").text
-        output.insert("end", returned)
+        global consoleOutput
+        consoleOutput = returned
+        if len(returned) >= 10000:
+          output.insert("end", "<output too large, please save>")
+        else:
+          output.insert("end", returned)
       output.config(state=DISABLED)
   else:
     if content == "Timeout":
@@ -124,6 +129,13 @@ def executeFile(jobID, *args, **kwargs):
     except Exception as e:
       messagebox.showerror("Error", f"Error opening file. Error: {e}")
 
+def saveOutput():
+  types = [("Text file", "*.txt"), ("All files", "*.*")]
+  file = filedialog.asksaveasfile(filetypes=types, defaultextension=types)
+  file.write(consoleOutput or None)
+  file.close()
+  messagebox.showinfo("Success", "Console output saved successfully")
+
 def showExecuteWindow():
   if joblist.item(joblist.focus()).get("values") == "":
     messagebox.showerror("Error", "Please select a job to execute a script in")
@@ -142,6 +154,8 @@ def showExecuteWindow():
   clearButton.grid(row=1, column=1, padx=5, pady=5, sticky=W)
   executeFileButton = Button(executeWindow, width=10, text="Execute file", command=lambda: executeFile(jobID, textbox=output))
   executeFileButton.grid(row=1, column=2, padx=5, pady=5, sticky=W)
+  saveOutputButton = Button(executeWindow, width=10, text="Save output", command=lambda: saveOutput())
+  saveOutputButton.grid(row=4, column=0, padx=5, pady=5, sticky=W)
 
 def closeJob():
   if joblist.item(joblist.focus()).get("values") == "":
