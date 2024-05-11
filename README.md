@@ -7,6 +7,8 @@ rccGUI allows you to create jobs, close jobs, and execute scripts within jobs.
  - requests
 ## Usage
 Run main.py. Make sure the IP and port points to a RCCService instance. If you do not have one, you can self host one by running `RCCService -Console -Start`. I will not provide a source to RCCService, but you should be able to find it easily.
+## To-do
+ - RBXGS support
 ## License
 This software is licensed under the MIT License.
 ```
